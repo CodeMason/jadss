@@ -54,12 +54,12 @@ public class Main {
 		}
 		*/
 		for(int i = 100;i<inst.length;i++){
-			//System.out.println("Playing "+i+": "+inst[i].getName());
+			System.out.println("Playing "+i+": "+inst[i].getName());
 			chan[2].programChange(inst[i].getPatch().getProgram());
 			chan[2].noteOn(65,93);
 			//Thread.sleep(1800);
 			Thread.sleep(100);
-			//chan[2].allNotesOff();
+			chan[2].allNotesOff();
 			
 		}
 		
