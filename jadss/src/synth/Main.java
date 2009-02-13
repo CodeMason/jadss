@@ -59,8 +59,7 @@ public class Main {
 			chan[2].noteOn(65,93);
 			//Thread.sleep(1800);
 			Thread.sleep(100);
-			chan[2].allNotesOff();
-			
+			chan[2].allNotesOff();	
 		}
 		
 		
