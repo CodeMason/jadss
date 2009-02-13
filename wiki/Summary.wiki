@@ -12,6 +12,11 @@ The project will consist in three major applications:
   # The *final version* with *real positioning*. We will have to discuss the positioning method, depending on different factors. This version may not be finished at the end of the project, but it will be anyway scheduled. 
 
 
+
+= Choices =
+
+For API Choices see [choices choices page]
+
 = Bibliography Links =
 
   * Java API options:
