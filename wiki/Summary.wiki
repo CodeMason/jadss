@@ -17,7 +17,7 @@ The project will consist in three major applications:
 
 For API Choices see [choices choices page]
 
-= Interesting Formulaes = 
+= Interesting Formulas = 
 
 === Attenuation ===
 
