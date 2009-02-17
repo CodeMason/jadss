@@ -17,9 +17,26 @@ The project will consist in three major applications:
 
 For API Choices see [choices choices page]
 
+= Interesting Formulaes = 
+
+=== Attenuation ===
+
+`Att = 20*log(r2/r1);`
+
+where r1 is usually 1meter (in speakers). But maybe we can use some reorder, if we know the actual sound amplitude:
+
+`Att = 20*log(r2) - 20*log(r1);`
+
+It might be considered that r1 doesn't really matters, as we should know the amplitude since it is synthesized *(we should eventually confirm that statement, this is just theory)*, so the formula should be:
+
+`Actual_sound(r) = Initial_Amplitude - 20*log(r);`
+
+So if we want to listen with the initial amplitude the sound in a distance r we should make the sound at source a _20*log(r)_ greater in amplitude.
+
+
 = Bibliography Links =
 
-  * Java API options:
+  * Java API options (not every API will be used in this project):
     * Java Sound / JMF:
       * [http://www.jsresources.org/ Java resources]
       * [http://www.developer.com/java/other/article.php/2173111 Java Sound Article]
