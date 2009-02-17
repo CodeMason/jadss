@@ -23,11 +23,11 @@ For API Choices see [choices choices page]
 
 `Att = 20*log(r2/r1);`
 
-where r1 is usually 1meter (in speakers). But maybe we can use some reorder, if we know the actual sound amplitude:
+where `r1` is usually 1meter (in speakers). But maybe we can use some reorder, if we know the actual sound amplitude:
 
 `Att = 20*log(r2) - 20*log(r1);`
 
-It might be considered that r1 doesn't really matters, as we should know the amplitude since it is synthesized *(we should eventually confirm that statement, this is just theory)*, so the formula should be:
+It might be considered that `r1` doesn't really matters, as we should know the amplitude since it is synthesized *(we should eventually confirm that statement, this is just theory)*, so the formula should be:
 
 `Actual_sound(r) = Initial_Amplitude - 20*log(r);`
 
