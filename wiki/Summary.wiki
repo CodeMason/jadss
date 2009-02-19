@@ -43,6 +43,7 @@ So if we want to listen with the initial amplitude the sound in a distance r we 
       * [http://today.java.net/cs/user/forum/cs_disc/1298 Java Sound Article]
       * [http://java.sun.com/j2se/1.4.2/docs/guide/sound/programmer_guide/index.html Sun Java Sound Guide]
       * [http://java.sun.com/docs/books/tutorial/sound/index.html Java Sound Tutorial]
+      * [http://www.phy.ntnu.edu.tw/ntnujava/index.php?topic=17 Java example on generating sound with Fourier]
 
     * Other APIs
       * [http://www.tritonus.org Tritonus API]
