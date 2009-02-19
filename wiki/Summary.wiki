@@ -17,6 +17,11 @@ The project will consist in three major applications:
 
 For API Choices see [choices choices page]
 
+= Ideas =
+
+  * Keep a global clock, and synchronize using it as timestamps.
+  * 
+
 = Interesting Formulas = 
 
 === Attenuation ===
