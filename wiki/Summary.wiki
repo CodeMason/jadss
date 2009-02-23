@@ -24,6 +24,15 @@ For API Choices see [choices choices page]
 
 = Interesting Formulas = 
 
+
+=== Distance delay ===
+We assume that sound moves at 343m/s. So sound delay should be a function with distance as parameter:
+
+`delay(x) = x/343 s`
+
+For the different nodes, we'll make as we can see in bibliography:
+`TD`,,i,,` = [max(d`,,i=1,..,4,,`) - d`,,i,,`] / 343`
+
 === Attenuation ===
 
 `Att = 20*log(r2/r1);`
@@ -38,8 +47,15 @@ It might be considered that `r1` doesn't really matters, as we should know the a
 
 So if we want to listen with the initial amplitude the sound in a distance r we should make the sound at source a _20*log(r)_ greater in amplitude.
 
+In documentation we can find this formula, which seems to adjust to our implementation:
+
+`VOL`,,i,,` = VOL`,,Ref,,` - 19.93 log(d`,,i,,` / max(d`,,i = 1,..., 4,,`))`
 
 = Bibliography Links =
+
+  * Similar projects:
+    * [http://ieeexplore.ieee.org/Xplore/login.jsp?url=/iel5/4519543/4519544/04519565.pdf?arnumber=4519565 Realization of an Adaptive Distributed Sound System
+Based on Global-time-based Coordination and Listener Localization]
 
   * Java API options (not every API will be used in this project):
     * Java Sound / JMF:
