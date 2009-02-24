@@ -3,6 +3,7 @@
  */
 package synth;
 
+import com.jme.app.AbstractGame.ConfigShowMode;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
