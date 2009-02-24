@@ -3,19 +3,21 @@
  */
 package synth;
 
-import javax.sound.midi.*;
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Sphere;
+import com.jme.util.geom.BufferUtils;
+
+import scene.Scene;
 
 /**
  * @author Marcelino Lopez
  *
  */
 public class Main {
-	static public Synthesizer synt;
-	static public Sequencer sequencer;
-	static public Sequence seq;
-	static public Soundbank bank;
-	static public Instrument[] inst;
-	static public MidiChannel[] chan;
 	
 	/**
 	 * @param args String array where line arguments are placed 
@@ -23,51 +25,32 @@ public class Main {
 	 * @throws InvalidMidiDataException 
 	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) throws MidiUnavailableException, InvalidMidiDataException, InterruptedException {
+	public static void main(String[] args) throws InterruptedException {
 		System.out.println("Hi");
+	
+/*		Synth.getInstance();
+		int iLength = Synth.getInstrumentSize();
+		int cLength = Synth.getChannelSize();
+		System.out.println("There are "+ iLength +" instruments.");
+		System.out.println("There are "+ cLength +" channels.");
 
-		synt =MidiSystem.getSynthesizer();
-		sequencer = MidiSystem.getSequencer();
-		seq= new Sequence(Sequence.PPQ, 5);
-		synt.open();
-		bank = synt.getDefaultSoundbank();
-		if (bank != null)
-			inst = synt.getDefaultSoundbank().getInstruments();
-		else{
-			inst = synt.getAvailableInstruments();
-		}
-				
-		chan = synt.getChannels();
-		System.out.println("There are "+inst.length+" instruments");
-		System.out.println("There are "+chan.length+" channels");
-		
-		/*for(int i = 0;i<chan.length;i++){
-			MidiChannel c = chan[i];
-			c.programChange(inst[i*5].getPatch().getProgram());
-			if(c != null){
-				c.resetAllControllers();
-				System.out.println("Channel "+i+" playing");
-				c.noteOn(60,93);
-				
-			}
-			else System.out.println("oh, noes!");
-		}
-		*/
-		for(int i = 100;i<inst.length;i++){
-			System.out.println("Playing "+i+": "+inst[i].getName());
-			chan[2].programChange(inst[i].getPatch().getProgram());
-			chan[2].noteOn(65,93);
-			//Thread.sleep(1800);
-			Thread.sleep(100);
-			chan[2].allNotesOff();	
-		}
-		
+//		for(int i = 0;i<iLength;i++){
+		int i=80;
+			Synth.selectInstrument(i);
+			Synth.setVolumeReference(80);
+			Synth.setDistance(300);
+			System.out.println("Playing "+i+": "+Synth.getInstrumentName());
+			Synth.playNote(60, 100, 3000, 0);
+//		}
+
 		
         
-        System.out.println("Bye!!");
-		for(MidiChannel c : chan){
-			c.allSoundOff();
-		}
+        Synth.turnOff();
+*/
+		Scene s = new Scene();
+		s.startScene();
+		
+		System.out.println("Bye!!");
 
 	}
 
