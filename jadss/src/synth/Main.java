@@ -3,14 +3,16 @@
  */
 package synth;
 
-import com.jme.app.AbstractGame.ConfigShowMode;
-import com.jme.bounding.BoundingBox;
-import com.jme.bounding.BoundingSphere;
-import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.TriMesh;
-import com.jme.scene.shape.Sphere;
-import com.jme.util.geom.BufferUtils;
+
+
+import java.io.File;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 
 import scene.Scene;
 
@@ -19,40 +21,22 @@ import scene.Scene;
  *
  */
 public class Main {
-	
+		
 	/**
 	 * @param args String array where line arguments are placed 
 	 * @throws MidiUnavailableException 
 	 * @throws InvalidMidiDataException 
 	 * @throws InterruptedException 
+	 * @throws LineUnavailableException 
 	 */
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws Exception {
 		System.out.println("Hi");
+			Sound s = new Sound("sounds/mgs alert.wav");
+			s.start();
+			s.play();
+			s.close();
 	
-/*		Synth.getInstance();
-		int iLength = Synth.getInstrumentSize();
-		int cLength = Synth.getChannelSize();
-		System.out.println("There are "+ iLength +" instruments.");
-		System.out.println("There are "+ cLength +" channels.");
-
-//		for(int i = 0;i<iLength;i++){
-		int i=80;
-			Synth.selectInstrument(i);
-			Synth.setVolumeReference(80);
-			Synth.setDistance(300);
-			System.out.println("Playing "+i+": "+Synth.getInstrumentName());
-			Synth.playNote(60, 100, 3000, 0);
-//		}
-
-		
-        
-        Synth.turnOff();
-*/
-		Scene s = new Scene();
-		s.startScene();
-		
 		System.out.println("Bye!!");
-
 	}
-
+	
 }
