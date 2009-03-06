@@ -1,0 +1,28 @@
+#summary How we're getting closer to the functionality required (TODO's & DONE's)
+#labels Featured,Phase-QA
+
+== Goals Achieved == 
+
+  * Math Sounds (Sin waves and so):
+     * Play fixed sound
+     * Loop fixed sound
+  * File Sounds (wav, au and maybe others):
+     * Play sound _---> bug to resolve_
+     * Loop sound _---> bug to resolve_
+
+
+== Next Goals ==
+
+  * Math sound created or chosen in ET (execution time)
+  * Refine and modularize
+  * Use volume control to simulate distance.
+  * Play only concrete sounds chunks, specified by time
+
+
+== Other Main Goals ==
+
+  * Loop limited (by time and/or times).
+  * ...
+
+  * Going distributed
+  * Virtual app 
