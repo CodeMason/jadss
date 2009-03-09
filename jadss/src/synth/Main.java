@@ -3,17 +3,6 @@
  */
 package synth;
 
-
-
-import java.io.File;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-
 import scene.Scene;
 
 /**
@@ -31,10 +20,25 @@ public class Main {
 	 */
 	public static void main(String[] args) throws Exception {
 		System.out.println("Hi");
-			Sound s = new Sound("sounds/mgs alert.wav");
+			Sound s = new Sound("sounds/alert.wav");
 			s.start();
+			s.setRefGain(0);
+			//s.setDistance(4.5f);
+			System.out.println("Offset: "+s.getOffsetMicros()+" us ("+s.getOffset()+" B)");
+			s.setOffsetMicros(200*1000);
+			System.out.println("Offset: "+s.getOffsetMicros()+" us ("+s.getOffset()+" B)");
+			
 			s.play();
+
+			System.out.println("Play at: "+s.getDistance()+ " m (" + s.getGain()+ " dB)");
+			System.out.println("Bytes Per second: "+s.getBytesSec()+" B/s ,  bits per sample: "+s.getBitsPerSample()+" bps , chunksize: "+s.getChunkSize()+" B");
+			System.out.println("Precision: "+ s.getPrecision() * 1000 +" ms");
+			
+			//System.out.println("Pause!");
+			//Thread.sleep(500);
+			//s.play();
 			s.close();
+			
 	
 		System.out.println("Bye!!");
 	}
