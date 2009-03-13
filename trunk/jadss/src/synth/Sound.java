@@ -13,34 +13,77 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-
+/**
+ * @author Marce
+ * Sound class. It can be controlled in data bytes or time and offers a simple compensation of distance (in gain and delay).
+ */
 public class Sound{
-	/*AUDIO DEFAULT INITIAL PARAMETERS*/
-	private int playSampleCount = 131072;
+
+	/** Sample data array */
+	private byte data[];
+	
+	/**Size of array bytes for sampling*/
+	private int playSampleCount = 262144;
+	
+	/**Default sampling rate. It'll change for file's default if used*/
 	private float defaultRate = 44100;
+
+	/**Size of each chunk that will be written in line
+	 * If it's too small, sound will play with artifacts due to the little pauses between writings (empty buffer).
+	 * If it's too big, the precision will decrease*/
 	private int chunkSize = 8;
+	
+	/**Shows whether if we're using a sound file or our standard tone*/
 	private boolean usingFile=false;
+	
+	/**Sound offset in bytes used for both sounds, files and 'sampled'*/
 	private int offset = 0;
+	
+	/**Default value for bitsPerSample*/
 	private int bitsPerSample=8;
-	private float distance = 1f;
-	private float refGain = -15.944f;
+	
+	/**Default value for reference Distance*/
+	private float refDistance = .1f;
+
+	/**Default value for distance*/
+	private float distance = refDistance;
+	
+	
+	/**Default value for reference gain, (the lower it is, the further distance we can simulate)*/
+	private float refGain = -35.4174823761f;
+	/**Default value for gain on the distance*/
 	private float gain=refGain;
+
+	/**Amount of bytes that will be played in a second*/
 	private long bytesSec;
 	
 	/*AUDIO FILE PARAMETERS*/
+	/** Size of the sound data within the file (in bytes)*/
 	private int fileSize = 0;
+	
+	/** Array that contains the whole data sound in file specified*/
 	private byte fileData[];
-	private byte data[];
+	
 	
 	
 	/*SYSTEM PARAMETERS*/
+	/**Audio Input Stream that loads the file*/
 	private AudioInputStream audioInputStream = null;
+	/**Audio Format variable (contains sound format information)*/
 	private AudioFormat format;
+	
+	/**Variable with all the info contained in the audio data line*/
 	private DataLine.Info info;
+	
+	/**Line we will use to write on the sound card*/
 	private SourceDataLine line;
+	
+	/**Control for the line Master gain*/
 	private FloatControl gainControl;
 	
-	
+	/**
+	 * Default constructor, generates a Sin wave sound sampled directly
+	 */
 	public Sound(){
 		data = new byte[playSampleCount];
 		format = new AudioFormat(defaultRate, bitsPerSample, 1, true, true);
@@ -71,7 +114,10 @@ public class Sound{
 	}
 	
 
-	
+	/**
+	 * Constructor with parameters we will use in case we need to play a sound file
+	 * @param filename String that contains the path to the file we will use
+	 */
 	public Sound(String filename){
 		data = new byte[playSampleCount];
 
@@ -126,7 +172,6 @@ public class Sound{
 
 	
 	//GETTERS AND SETTERS	
-	
 	public int getPlaySampleCount() {
 		return playSampleCount;
 	}
@@ -166,6 +211,7 @@ public class Sound{
 	public void setRefGain(float refGain) {
 		this.refGain = refGain;
 		gainControl.setValue(this.refGain);
+		this.setDistance(distance);
 	}
 
 	public float getGain() {
@@ -179,11 +225,19 @@ public class Sound{
 	public float getDistance() {
 		return distance;
 	}
+	
+	
 
 	public void setDistance(float meters){
+		//VOLi = VOLRef - 19.93 log10(di / max(di = 1,..., 4))
+		//TDi = [max(di=1,..,4) - di] / Vs
+		
+		//If distance is bigger than we can allow, we need to adjust it (maybe in future we should make 
+		// refGain change dynamically 
 		if(meters<getMaximumDistance()){
 			distance = meters;
-			gain = refGain+(float)(19.93f*Math.log10(distance));
+			gain = (float)(19.93f*Math.log10(distance/refDistance));
+			gain+=refGain;
 			gainControl.setValue(gain);
 		}
 		else {
@@ -192,6 +246,10 @@ public class Sound{
 			gain = refGain+(float)(19.93f*Math.log10(distance));
 			gainControl.setValue(gain);
 		}
+
+		
+		float f =(getOffsetMicros()+(distance-refDistance)/343*1000000);
+		setOffsetMicros((long)f);
 	}
 
 	public int getOffset() {
@@ -217,16 +275,15 @@ public class Sound{
 	}
 	
 	public float getPrecision(){
-		float p;
-		p = ((float)chunkSize)/bytesSec;
+		float result = ((float)chunkSize)/bytesSec;
 		
-		return p;
+		return result;
 	}
 	
 	public float getMaximumDistance() {
 		float max = gainControl.getMaximum();
 		
-		return (float) Math.pow( 10, (max-refGain)/19.93);
+		return (float) (refDistance*Math.pow( 10, ((max-refGain)/19.93)));
 	}
 	
 	
@@ -255,6 +312,46 @@ public class Sound{
 			}
 		}
 	}
+
+	public void playFromTo(long uStart, long uEnd){
+		float f = (uStart*bytesSec)/1000000.f;
+		int start = (int) f;
+		f = (uEnd*bytesSec)/1000000.f;
+		int end = (int) f;
+		this.play(start,end);
+	}
+	
+	public void play(int start, int end){
+		end -= offset;
+		offset += start;
+		
+		if(usingFile){
+			long i = System.currentTimeMillis();
+			while(offset < (end-chunkSize)){
+				line.write(fileData, offset, chunkSize);
+				offset+=chunkSize;
+			}
+			line.write(fileData, offset, end%chunkSize);
+			offset+=end%chunkSize;
+			line.drain();
+			long e = System.currentTimeMillis();
+			System.out.println("Played during: "+(e-i)+" ms");
+		}
+		else{
+			long i = System.currentTimeMillis();
+			while(offset<(end-chunkSize)){
+				line.write(data, offset%data.length, chunkSize);
+				offset += chunkSize;	
+			}
+			line.write(data, offset, end%chunkSize);
+			offset+=end%chunkSize;
+			line.drain();
+			long e = System.currentTimeMillis();  
+			System.out.println("Play duration: "+ (e-i)+" ms");
+			
+		}
+	}
+	
 	
 	public void play(){
 		if(usingFile){
@@ -270,7 +367,7 @@ public class Sound{
 			}
 		}
 		line.drain();
-		offset = 0;
+//		offset = 0;
 	}
 
 	public void close() {

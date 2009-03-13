@@ -13,34 +13,21 @@ public class Main {
 		
 	/**
 	 * @param args String array where line arguments are placed 
-	 * @throws MidiUnavailableException 
-	 * @throws InvalidMidiDataException 
 	 * @throws InterruptedException 
-	 * @throws LineUnavailableException 
 	 */
-	public static void main(String[] args) throws Exception {
-		System.out.println("Hi");
-			Sound s = new Sound("sounds/alert.wav");
-			s.start();
-			s.setRefGain(0);
-			//s.setDistance(4.5f);
-			System.out.println("Offset: "+s.getOffsetMicros()+" us ("+s.getOffset()+" B)");
-			s.setOffsetMicros(200*1000);
-			System.out.println("Offset: "+s.getOffsetMicros()+" us ("+s.getOffset()+" B)");
-			
-			s.play();
+	public static void main(String[] args) throws InterruptedException {
+		Sound s = new Sound("sounds/alert.wav");
+		s.start();
+		s.setChunkSize(16);
+		s.setDistance(12f);
+		System.out.println("Offset: "+s.getOffsetMicros()+" us ("+s.getOffset()+" B), MAX: "+s.getMaximumDistance()+" m");		
+		System.out.println("Play at: "+s.getDistance()+ " m (" + s.getGain()+ " dB)");
+		System.out.println("Bytes Per second: "+s.getBytesSec()+" B/s ,  bits per sample: "+s.getBitsPerSample()+" bps , chunksize: "+s.getChunkSize()+" B");
+		s.playFromTo(0, 1000000);
+		System.out.println("Offset: "+s.getOffsetMicros()+" us ("+s.getOffset()+" B)");		
 
-			System.out.println("Play at: "+s.getDistance()+ " m (" + s.getGain()+ " dB)");
-			System.out.println("Bytes Per second: "+s.getBytesSec()+" B/s ,  bits per sample: "+s.getBitsPerSample()+" bps , chunksize: "+s.getChunkSize()+" B");
-			System.out.println("Precision: "+ s.getPrecision() * 1000 +" ms");
-			
-			//System.out.println("Pause!");
-			//Thread.sleep(500);
-			//s.play();
-			s.close();
-			
-	
-		System.out.println("Bye!!");
+		s.close();
+
 	}
 	
 }
