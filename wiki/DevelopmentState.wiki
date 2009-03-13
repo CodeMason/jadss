@@ -11,8 +11,8 @@
      * Loop sound
   * Refine and modularize
   * Use volume control to simulate distance.
-  * Play only concrete sounds chunks, specified by time
-
+  * Use time shifting to simulate distance.
+  * Play only concrete sounds chunks, specified by time.
 
 == Next Goals ==
 
