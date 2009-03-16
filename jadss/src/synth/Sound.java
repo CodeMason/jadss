@@ -208,9 +208,19 @@ public class Sound{
 		return refGain;
 	}
 
+	public float getRefDistance() {
+		return refDistance;
+	}
+
+	public void setRefDistance(float refDistance){
+		this.refDistance = refDistance;
+		this.setDistance(distance);
+	}
+	
 	public void setRefGain(float refGain) {
 		this.refGain = refGain;
 		gainControl.setValue(this.refGain);
+		//Update the gain and delay
 		this.setDistance(distance);
 	}
 
@@ -232,8 +242,8 @@ public class Sound{
 		//VOLi = VOLRef - 19.93 log10(di / max(di = 1,..., 4))
 		//TDi = [max(di=1,..,4) - di] / Vs
 		
-		//If distance is bigger than we can allow, we need to adjust it (maybe in future we should make 
-		// refGain change dynamically 
+		//If distance is bigger than we can allow, we need to adjust it 
+		// (maybe in future we should make refGain change dynamically along the distance) 
 		if(meters<getMaximumDistance()){
 			distance = meters;
 			gain = (float)(19.93f*Math.log10(distance/refDistance));
@@ -291,14 +301,16 @@ public class Sound{
 		line.start();
 	}
 	
-	
+
+	/**
+	 * Play indefinitely a sound 
+	 */
 	public void loop(){
 		if(usingFile){
 			while(true){
 					line.write(fileData, offset,chunkSize);
 					offset+=chunkSize;
 					if (offset >= fileSize){
-						line.drain();
 						offset = 0;
 					}
 			}
@@ -307,52 +319,81 @@ public class Sound{
 			while(true){
 				line.write(data, offset,chunkSize);
 				offset+=chunkSize;
-				if (offset >= data.length )
+				if (offset >= data.length ){
 					offset = 0;
+				}
 			}
 		}
 	}
 
+	
+	/**
+	 * Play a sound during a certain amount of time. Uses play(start,end)
+	 * @param uStart starting time expressed in microseconds
+	 * @param uEnd end time expressed in microseconds
+	 */
 	public void playFromTo(long uStart, long uEnd){
 		float f = (uStart*bytesSec)/1000000.f;
 		int start = (int) f;
 		f = (uEnd*bytesSec)/1000000.f;
 		int end = (int) f;
+		System.out.println("t0: ("+uStart+" , "+start+")     te: ("+uEnd+" , "+end+")");
 		this.play(start,end);
 	}
 	
-	public void play(int start, int end){
-		end -= offset;
-		offset += start;
-		
+	/**
+	 * Play a sound between the bytes indicated.
+	 * @param start
+	 * @param end
+	 */
+	public void play(int start, int end){		
 		if(usingFile){
-			long i = System.currentTimeMillis();
-			while(offset < (end-chunkSize)){
-				line.write(fileData, offset, chunkSize);
-				offset+=chunkSize;
-			}
-			line.write(fileData, offset, end%chunkSize);
-			offset+=end%chunkSize;
-			line.drain();
-			long e = System.currentTimeMillis();
-			System.out.println("Played during: "+(e-i)+" ms");
+			int playoffset;
+			long i,e;
+				i = System.currentTimeMillis();
+				
+				for(playoffset = offset+start; playoffset < (end-chunkSize); playoffset += chunkSize){
+					line.write(fileData, playoffset, chunkSize);	
+				}
+	
+				line.write(fileData, playoffset, end-playoffset);
+				line.drain();
+				e = System.currentTimeMillis();
+				System.out.println("Duration: "+(e-i)+" ms");
+				playoffset+= end-playoffset;
+				offset = playoffset;
+				
 		}
 		else{
-			long i = System.currentTimeMillis();
-			while(offset<(end-chunkSize)){
+			int playoffset; 
+			long i,e;
+				i = System.currentTimeMillis();
+				for(playoffset = offset+start; playoffset <= (end-chunkSize); playoffset += chunkSize){
+					line.write(data, playoffset%data.length, chunkSize);	
+				}
+				line.write(data, playoffset%data.length, end-playoffset);
+				playoffset+= end-playoffset;
+				line.drain();
+				offset = playoffset;
+
+			e = System.currentTimeMillis();
+			System.out.println("Real Duration: "+(e-i)+" ms");
+			/*			while(offset<=(end-chunkSize)){
 				line.write(data, offset%data.length, chunkSize);
 				offset += chunkSize;	
 			}
 			line.write(data, offset, end%chunkSize);
 			offset+=end%chunkSize;
 			line.drain();
-			long e = System.currentTimeMillis();  
-			System.out.println("Play duration: "+ (e-i)+" ms");
-			
+			 */		
 		}
+
 	}
 	
 	
+	/**
+	 * Play a complete sound, from the beginning to the end. 
+	 */
 	public void play(){
 		if(usingFile){
 			while (offset < fileSize){
@@ -367,9 +408,11 @@ public class Sound{
 			}
 		}
 		line.drain();
-//		offset = 0;
 	}
 
+	/**
+	 * Close the sound system (will close the stream and the line
+	 */
 	public void close() {
 		
 		if(usingFile){
