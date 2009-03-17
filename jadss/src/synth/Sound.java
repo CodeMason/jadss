@@ -64,7 +64,8 @@ public class Sound{
 	/** Array that contains the whole data sound in file specified*/
 	private byte fileData[];
 	
-	
+	/** Integer that shows the size of an audio frame, needed to prevent exceptions on write*/
+	private int frameSize;	
 	
 	/*SYSTEM PARAMETERS*/
 	/**Audio Input Stream that loads the file*/
@@ -80,6 +81,8 @@ public class Sound{
 	
 	/**Control for the line Master gain*/
 	private FloatControl gainControl;
+
+
 	
 	/**
 	 * Default constructor, generates a Sin wave sound sampled directly
@@ -88,10 +91,11 @@ public class Sound{
 		data = new byte[playSampleCount];
 		format = new AudioFormat(defaultRate, bitsPerSample, 1, true, true);
 	    info = new DataLine.Info(SourceDataLine.class, format);
-	
+	    
 	    //Calculate time factor
 	    // 
 	    bytesSec = (long) defaultRate*bitsPerSample/8;
+	    frameSize = 1;
 	    
  	    double x;
 	    for(int i=0;i<playSampleCount;i++){
@@ -126,6 +130,7 @@ public class Sound{
 			audioInputStream = AudioSystem.getAudioInputStream(f);
 			fileSize = audioInputStream.available();
 			format = audioInputStream.getFormat();
+			frameSize = audioInputStream.getFormat().getFrameSize();
 
 			bitsPerSample = format.getSampleSizeInBits();
 			defaultRate = format.getSampleRate();
@@ -337,7 +342,18 @@ public class Sound{
 		int start = (int) f;
 		f = (uEnd*bytesSec)/1000000.f;
 		int end = (int) f;
-		System.out.println("t0: ("+uStart+" , "+start+")     te: ("+uEnd+" , "+end+")");
+		if((end-start)%frameSize!=0){
+			int pEnd = end;
+			end-=(end-start)%frameSize;
+			System.err.println("Warning, the end time needs to be rounded to match an integral frame size. Old value: "+pEnd+" New value: "+ end);
+		}
+		if(usingFile && end>fileSize){
+			int pEnd = end;
+			end=fileSize;
+			System.err.println("Warning, End can't be greater than the file size, reducing to its maximum "+pEnd+" New value: "+ end);
+		}
+		
+		System.out.println("t0: ("+uStart+" , "+start+")     te: ("+uEnd+" , "+end+") in (us, B)");
 		this.play(start,end);
 	}
 	
@@ -349,35 +365,27 @@ public class Sound{
 	public void play(int start, int end){		
 		if(usingFile){
 			int playoffset;
-			long i,e;
-				i = System.currentTimeMillis();
-				
 				for(playoffset = offset+start; playoffset < (end-chunkSize); playoffset += chunkSize){
-					line.write(fileData, playoffset, chunkSize);	
+					line.write(fileData, playoffset, chunkSize);
 				}
 	
 				line.write(fileData, playoffset, end-playoffset);
 				line.drain();
-				e = System.currentTimeMillis();
-				System.out.println("Duration: "+(e-i)+" ms");
 				playoffset+= end-playoffset;
 				offset = playoffset;
 				
 		}
 		else{
 			int playoffset; 
-			long i,e;
-				i = System.currentTimeMillis();
 				for(playoffset = offset+start; playoffset <= (end-chunkSize); playoffset += chunkSize){
-					line.write(data, playoffset%data.length, chunkSize);	
+					offset = (playoffset)%(data.length-chunkSize);
+					line.write(data, offset, chunkSize);
 				}
 				line.write(data, playoffset%data.length, end-playoffset);
 				playoffset+= end-playoffset;
 				line.drain();
 				offset = playoffset;
 
-			e = System.currentTimeMillis();
-			System.out.println("Real Duration: "+(e-i)+" ms");
 			/*			while(offset<=(end-chunkSize)){
 				line.write(data, offset%data.length, chunkSize);
 				offset += chunkSize;	
