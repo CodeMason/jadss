@@ -31,10 +31,8 @@ public class Sound{
 	/**Size of each chunk that will be written in line
 	 * If it's too small, sound will play with artifacts due to the little pauses between writings (empty buffer).
 	 * If it's too big, the precision will decrease*/
-	private int chunkSize = 8;
+	private int chunkSize = 4096;
 	
-	/**Shows whether if we're using a sound file or our standard tone*/
-	private boolean usingFile=false;
 	
 	/**Sound offset in bytes used for both sounds, files and 'sampled'*/
 	private int offset = 0;
@@ -57,13 +55,6 @@ public class Sound{
 	/**Amount of bytes that will be played in a second*/
 	private long bytesSec;
 	
-	/*AUDIO FILE PARAMETERS*/
-	/** Size of the sound data within the file (in bytes)*/
-	private int fileSize = 0;
-	
-	/** Array that contains the whole data sound in file specified*/
-	private byte fileData[];
-	
 	/** Integer that shows the size of an audio frame, needed to prevent exceptions on write*/
 	private int frameSize;	
 	
@@ -82,6 +73,8 @@ public class Sound{
 	/**Control for the line Master gain*/
 	private FloatControl gainControl;
 
+	private int audioSize;
+
 
 	
 	/**
@@ -89,6 +82,7 @@ public class Sound{
 	 */
 	public Sound(){
 		data = new byte[playSampleCount];
+		audioSize = playSampleCount;
 		format = new AudioFormat(defaultRate, bitsPerSample, 1, true, true);
 	    info = new DataLine.Info(SourceDataLine.class, format);
 	    
@@ -114,7 +108,7 @@ public class Sound{
 			System.exit(1);
 		}
 	    
-	    usingFile=false;
+
 	}
 	
 
@@ -123,12 +117,11 @@ public class Sound{
 	 * @param filename String that contains the path to the file we will use
 	 */
 	public Sound(String filename){
-		data = new byte[playSampleCount];
 
 		File f = new File(filename);
 		try {
 			audioInputStream = AudioSystem.getAudioInputStream(f);
-			fileSize = audioInputStream.available();
+			audioSize = audioInputStream.available();
 			format = audioInputStream.getFormat();
 			frameSize = audioInputStream.getFormat().getFrameSize();
 
@@ -138,12 +131,6 @@ public class Sound{
 			//Calculate time factor
 		    bytesSec = (long) (defaultRate*bitsPerSample/8);
 		    
-		    //Calculate appropiate chunkSize
-		    if(bytesSec<=22050) chunkSize = 8*bitsPerSample/8;
-		    //else if(bytesSec<=) chunkSize = 32*bitsPerSample/8;
-		    else if(bytesSec<=44100) chunkSize = 128*bitsPerSample/8;
-		    else chunkSize = 1024*bitsPerSample/8;
-		    
 		} catch (UnsupportedAudioFileException e1) {
 			e1.printStackTrace();
 			System.exit(1);
@@ -152,15 +139,19 @@ public class Sound{
 			System.exit(1);
 		}
 
-		fileData = new byte[fileSize+chunkSize];
+		data = new byte[audioSize];
+		int read=0;
 		try {
-			audioInputStream.read(fileData,0,fileSize);
+			read = audioInputStream.read(data,0,audioSize);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 			System.exit(1);
 		}
-
-			    
+		
+		if(read!=audioSize){
+			System.err.println("The file hasn't been read correctly");
+			System.exit(1);
+		}
 		
 		info = new DataLine.Info(SourceDataLine.class, format);
 		try {
@@ -172,7 +163,13 @@ public class Sound{
 			e.printStackTrace();
 			System.exit(1);
 		}
-		usingFile=true;
+
+		try {
+			audioInputStream.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 	
@@ -261,7 +258,6 @@ public class Sound{
 			gain = refGain+(float)(19.93f*Math.log10(distance));
 			gainControl.setValue(gain);
 		}
-
 		
 		float f =(getOffsetMicros()+(distance-refDistance)/343*1000000);
 		setOffsetMicros((long)f);
@@ -272,8 +268,8 @@ public class Sound{
 	}
 
 	public void setOffset(int offset) {
-		if(usingFile && offset>=fileSize){
-			System.err.println("Offset Bigger than file size");
+		if(offset>=audioSize){
+			System.err.println("Warning: Offset Bigger than audio size");
 			offset=0;
 		}
 		else this.offset = offset;
@@ -311,23 +307,17 @@ public class Sound{
 	 * Play indefinitely a sound 
 	 */
 	public void loop(){
-		if(usingFile){
-			while(true){
-					line.write(fileData, offset,chunkSize);
-					offset+=chunkSize;
-					if (offset >= fileSize){
-						offset = 0;
-					}
-			}
+		if(offset%frameSize!=0){
+			int pOffset = offset;
+			offset+=offset%frameSize;
+			System.err.println("Warning, the initial offset needs to be rounded to match an integral frame size. Old value: "+pOffset+" New value: "+ offset);
 		}
-		else{	
-			while(true){
-				line.write(data, offset,chunkSize);
-				offset+=chunkSize;
-				if (offset >= data.length ){
-					offset = 0;
-				}
+
+		while(true){
+			if(offset >= audioSize ){
+				offset = 0;
 			}
+			offset+= line.write(data, offset,((offset+chunkSize)>=audioSize)?(audioSize-offset):chunkSize);	
 		}
 	}
 
@@ -342,18 +332,15 @@ public class Sound{
 		int start = (int) f;
 		f = (uEnd*bytesSec)/1000000.f;
 		int end = (int) f;
-		if((end-start)%frameSize!=0){
+		if(end%frameSize!=0){
 			int pEnd = end;
-			end-=(end-start)%frameSize;
+			end-=end%frameSize;
 			System.err.println("Warning, the end time needs to be rounded to match an integral frame size. Old value: "+pEnd+" New value: "+ end);
 		}
-		if(usingFile && end>fileSize){
-			int pEnd = end;
-			end=fileSize;
-			System.err.println("Warning, End can't be greater than the file size, reducing to its maximum "+pEnd+" New value: "+ end);
-		}
+
+		offset+=start;
 		
-		System.out.println("t0: ("+uStart+" , "+start+")     te: ("+uEnd+" , "+end+") in (us, B)");
+		System.out.println("t0: ("+uStart+" , "+offset+")     te: ("+uEnd+" , "+end+") in (us, B)");
 		this.play(start,end);
 	}
 	
@@ -363,39 +350,45 @@ public class Sound{
 	 * @param end
 	 */
 	public void play(int start, int end){		
-		if(usingFile){
-			int playoffset;
-				for(playoffset = offset+start; playoffset < (end-chunkSize); playoffset += chunkSize){
-					line.write(fileData, playoffset, chunkSize);
-				}
-	
-				line.write(fileData, playoffset, end-playoffset);
-				line.drain();
-				playoffset+= end-playoffset;
-				offset = playoffset;
-				
+		if(offset%frameSize!=0){
+			int pOffset = offset;
+			offset+=offset%frameSize;
+			System.err.println("Warning, the initial offset needs to be rounded to match an integral frame size. Old value: "+pOffset+" New value: "+ offset);
 		}
-		else{
-			int playoffset; 
-				for(playoffset = offset+start; playoffset <= (end-chunkSize); playoffset += chunkSize){
-					offset = (playoffset)%(data.length-chunkSize);
-					line.write(data, offset, chunkSize);
-				}
-				line.write(data, playoffset%data.length, end-playoffset);
-				playoffset+= end-playoffset;
-				line.drain();
-				offset = playoffset;
 
-			/*			while(offset<=(end-chunkSize)){
-				line.write(data, offset%data.length, chunkSize);
-				offset += chunkSize;	
+
+		//playOffset will provide a offset counter
+		int playOffset = offset;
+		int toWrite = chunkSize;
+		int written = 0;
+
+		//We need to write just until we reach end-chunkSize, so we could write the difference later
+		while(playOffset<(end-chunkSize)){
+			//If we're about to get over the audio size, we reset the actual offset
+			if(offset >= audioSize ){
+				offset = 0;
+				toWrite = chunkSize;
 			}
-			line.write(data, offset, end%chunkSize);
-			offset+=end%chunkSize;
-			line.drain();
-			 */		
-		}
+			//If we're on the end of the file, we should write just the last chunk of sound
+			else if((offset+chunkSize)>=audioSize){
+				toWrite = (audioSize-offset);
+			}
 
+			//Writing on the file
+			written = line.write(data, offset,toWrite);
+			offset+=written;
+			playOffset+=written;
+		}
+		toWrite = end-playOffset;
+		if((toWrite%frameSize)!=0){
+			System.err.println("Approximation needed in writing: ("+toWrite+") is not an integral number for frameSize: "+frameSize);
+			toWrite-=(toWrite%frameSize);
+		}
+		//We need to write the last chunk (smaller than chunkSize)
+		written = line.write(data, offset,toWrite);
+		playOffset += written;
+		offset=playOffset;
+		line.drain();
 	}
 	
 	
@@ -403,36 +396,24 @@ public class Sound{
 	 * Play a complete sound, from the beginning to the end. 
 	 */
 	public void play(){
-		if(usingFile){
-			while (offset < fileSize){
-				line.write(fileData, offset, chunkSize);
-				offset+=chunkSize;
-			}
+		if(offset%frameSize!=0){
+			int pOffset = offset;
+			offset+=offset%frameSize;
+			System.err.println("Warning, the initial offset needs to be rounded to match an integral frame size. Old value: "+pOffset+" New value: "+ offset);
 		}
-		else{
-			while(offset<data.length){
+
+		while(offset<(audioSize-chunkSize)){
 				line.write(data, offset, chunkSize);
-				offset += chunkSize;
-			}
+				offset+=chunkSize;
 		}
+		offset += line.write(data, offset, audioSize-offset);
 		line.drain();
 	}
 
 	/**
-	 * Close the sound system (will close the stream and the line
+	 * Close the sound system
 	 */
-	public void close() {
-		
-		if(usingFile){
-			try {
-				audioInputStream.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-		}
+	public void close() {		
 		line.close();
-	}
-
-	
+	}	
 }
