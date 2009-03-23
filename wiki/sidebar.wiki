@@ -3,6 +3,6 @@
   * [Summary Main]
   * [Summary#Ideas Ideas]
   * [Summary#How_it_works How it works]
-  * [Summary#Interesting_formulas Sound Theory Formulas]
+  * [Summary#Interesting_Formulas Sound Theory Formulas]
   * [choices Choices]
   * [Links Links]
