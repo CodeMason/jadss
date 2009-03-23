@@ -2,7 +2,7 @@
 
   * [Summary Main]
   * [Summary#Ideas Ideas]
-  * [Summary#How it works How it works]
-  * [Summary#Interesting formulas Sound Theory Formulas]
-  * [Choices Choices]
+  * [Summary#How_it_works How it works]
+  * [Summary#Interesting_formulas Sound Theory Formulas]
+  * [choices Choices]
   * [Links Links]
