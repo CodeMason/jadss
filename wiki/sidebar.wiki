@@ -1,0 +1,7 @@
+#summary wiki sidebar
+
+  * [Summary Main]
+  * [Summary#Ideas Ideas]
+  * [Summary#How How it works]
+  * [Choices Choices]
+  * [Links Links]
