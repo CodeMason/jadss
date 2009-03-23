@@ -1,5 +1,7 @@
 #summary Summary of this project
 #labels Featured,Phase-Requirements
+#sidebar <wiki:toc max_depth="1" />
+
 
 = Introduction =
 
@@ -21,8 +23,8 @@ For API Choices see [choices choices page]
   * Try to do the same treatment to sampled and files sounds.
   * Establish the limitations to each layer.
 
-= Interesting Formulas = 
 
+= Interesting Formulas = 
 
 === Distance delay ===
 We assume that sound moves at 343m/s. So sound delay should be a function with distance as parameter:
