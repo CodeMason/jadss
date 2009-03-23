@@ -9,16 +9,17 @@
   * File Sounds (wav, au and maybe others):
      * Play sound
      * Loop sound
-  * Refine and modularize
   * Use volume control to simulate distance.
   * Use time shifting to simulate distance.
   * Play only concrete sounds chunks, specified by time.
+  * Solve the 'chunk' issue.
+
 
 == Next Goals ==
 
+  * Estimate maximum/minimum delay due to every layer on this system (to see which ones we're able to get rid of).
   * Math sound created or chosen in ET (execution time)
   * Ameliorate quality/precision relation (make it less file-dependant).
-    * Solve the 'chunk' issue
     * Solve the 'drain' delay
  
 == Other Main Goals ==
