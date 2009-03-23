@@ -10,15 +10,19 @@ The project will consist in three major applications:
   # A second version, *distributed*, a *real-life implementation* of the first version, solving the problem of managing the delays on the communications between different PCs. Positioning will not be implemented yet.
   # The *final version* with *real positioning*. We will have to discuss the positioning method, depending on different factors. This version may not be finished at the end of the project, but it will be anyway scheduled. 
 -----
-
-
+<br>
+<br>
+<br>
+<br>
 
 = Choices =
 
 For API Choices see [choices choices page]
 -----
-
-
+<br>
+<br>
+<br>
+<br>
 
 = Ideas =
 
@@ -26,9 +30,10 @@ For API Choices see [choices choices page]
   * Try to do the same treatment to sampled and files sounds.
   * Establish the limitations to each layer.
 -----
-
-
-
+<br>
+<br>
+<br>
+<br>
 
 = How it works =
 
@@ -39,8 +44,10 @@ Here I'm taking some tips to see how does the project work.
 
   * First of all, we have our Application layer. _*Explain this and go for other layers*_
 -----
-
-
+<br>
+<br>
+<br>
+<br>
 
 = Interesting Formulas = 
 
@@ -70,8 +77,10 @@ In documentation we can find this formula, which seems to adjust to our implemen
 
 `VOL`,,i,,` = VOL`,,Ref,,` - 19.93 log(d`,,i,,` / max(d`,,i = 1,..., 4,,`))`
 -----
-
-
+<br>
+<br>
+<br>
+<br>
 
 = Links =
 See [Links links page].
