@@ -4,8 +4,7 @@
 = Bibliography Links =
 
   * Similar projects:
-    * [http://ieeexplore.ieee.org/Xplore/login.jsp?url=/iel5/4519543/4519544/04519565.pdf?arnumber=4519565 Realization of an Adaptive Distributed Sound System
-Based on Global-time-based Coordination and Listener Localization]
+    * [http://ieeexplore.ieee.org/Xplore/login.jsp?url=/iel5/4519543/4519544/04519565.pdf?arnumber=4519565 Realization of an Adaptive Distributed Sound System Based on Global-time based Coordination and Listener Localization]
 
   * Java API options (not every API will be used in this project):
     * Java Sound / JMF:
