@@ -9,18 +9,26 @@ The project will consist in three major applications:
   # A *preliminary version totally virtual*, which will generate tone pulses. Then, this version will also be useful as a virtual implementation, since it will include (hopefully) a 3D world where the four PC's (or in this case, sound sources) will be placed to simulate the distance from the listener with NativeFMOD (or an equivalent library).
   # A second version, *distributed*, a *real-life implementation* of the first version, solving the problem of managing the delays on the communications between different PCs. Positioning will not be implemented yet.
   # The *final version* with *real positioning*. We will have to discuss the positioning method, depending on different factors. This version may not be finished at the end of the project, but it will be anyway scheduled. 
+-----
 
 
 
 = Choices =
 
 For API Choices see [choices choices page]
+-----
+
+
 
 = Ideas =
 
   * Keep a global clock, and synchronize using it as timestamps.
   * Try to do the same treatment to sampled and files sounds.
   * Establish the limitations to each layer.
+-----
+
+
+
 
 = How it works =
 
@@ -30,6 +38,8 @@ Here I'm taking some tips to see how does the project work.
 
 
   * First of all, we have our Application layer. _*Explain this and go for other layers*_
+-----
+
 
 
 = Interesting Formulas = 
@@ -59,6 +69,8 @@ So if we want to listen with the initial amplitude the sound in a distance r we 
 In documentation we can find this formula, which seems to adjust to our implementation:
 
 `VOL`,,i,,` = VOL`,,Ref,,` - 19.93 log(d`,,i,,` / max(d`,,i = 1,..., 4,,`))`
+-----
+
 
 
 = Links =
