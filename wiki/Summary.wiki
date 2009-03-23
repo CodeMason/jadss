@@ -5,10 +5,8 @@
 
 The project will consist in three major applications:
 
-  # A *preliminary version totally virtual*, which will generate tone pulses. Then, this version will also be useful as a virtual implementation, since it will include (hopefully) a 3D world where the four PC's (or in this case, sound sources) will be placed to simulate the distance from the listener with NativeFMOD (or an equivalent library). 
-
-  # A second version, *distributed*, a *real-life implementation* of the first version, solving the problem of managing the delays on the communications between different PCs. Positioning will not be implemented yet. 
-
+  # A *preliminary version totally virtual*, which will generate tone pulses. Then, this version will also be useful as a virtual implementation, since it will include (hopefully) a 3D world where the four PC's (or in this case, sound sources) will be placed to simulate the distance from the listener with NativeFMOD (or an equivalent library).
+  # A second version, *distributed*, a *real-life implementation* of the first version, solving the problem of managing the delays on the communications between different PCs. Positioning will not be implemented yet.
   # The *final version* with *real positioning*. We will have to discuss the positioning method, depending on different factors. This version may not be finished at the end of the project, but it will be anyway scheduled. 
 
 
@@ -54,4 +52,4 @@ In documentation we can find this formula, which seems to adjust to our implemen
 
 
 = Links =
-See [Links links] page.
+See [Links links page].
