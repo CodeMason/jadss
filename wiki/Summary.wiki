@@ -1,6 +1,5 @@
 #summary Summary of this project
 #labels Featured,Phase-Requirements
-#sidebar <wiki:toc max_depth="1" />
 
 
 = Introduction =
@@ -22,6 +21,15 @@ For API Choices see [choices choices page]
   * Keep a global clock, and synchronize using it as timestamps.
   * Try to do the same treatment to sampled and files sounds.
   * Establish the limitations to each layer.
+
+= How it works =
+
+Here I'm taking some tips to see how does the project work.
+
+  * There are some layers we need to 'cross' to play sound in our computer. Each one will take a delay between it's coming from superior level and going into the next one. If we're able to reduce these delays, the project will success.
+
+
+  * First of all, we have our Application layer. _*Explain this and go for other layers*_
 
 
 = Interesting Formulas = 
