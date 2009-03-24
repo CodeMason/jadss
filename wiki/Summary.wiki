@@ -35,14 +35,19 @@ For API Choices see [choices choices page]
 <br>
 <br>
 
-= How it works =
+= Architecture =
 
-Here I'm taking some tips to see how does the project work.
+Here I'm taking some tips to see the project layers as a typical sound application.
 
-  * There are some layers we need to 'cross' to play sound in our computer. Each one will take a delay between it's coming from superior level and going into the next one. If we're able to reduce these delays, the project will success.
+  * There are some layers we need to 'cross' to play sound in our computer. Each one will take a delay between it's coming from superior level and going into the next one. If we're able to reduce these delays, it may achieve our goals.
+<br>
+http://jadss.googlecode.com/svn/trunk/jadss/imgs/layers.gif
+<br>
+  * Java layer: 
+    * First of all, we have our Application layer. This layer is *over* our project, since we're trying to offer a service. We'll implement, of course, an example app to show the power of the project.
+    * Next, there's our Sound system layer, which connects the application to Java Sound library. This is where we need to focus our attention in order to optimize the project, since the rest of them will not depend on us.
+    * Then, the Java Sound (as part of JMF _or Java Media Framework_)*TO BE CONTINUED*
 
-
-  * First of all, we have our Application layer. _*Explain this and go for other layers*_
 -----
 <br>
 <br>
