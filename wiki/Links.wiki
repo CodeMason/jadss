@@ -6,6 +6,11 @@
   * Similar projects:
     * [http://ieeexplore.ieee.org/Xplore/login.jsp?url=/iel5/4519543/4519544/04519565.pdf?arnumber=4519565 Realization of an Adaptive Distributed Sound System Based on Global-time based Coordination and Listener Localization]
 
+  * Sound Architecture:
+    * [http://download.microsoft.com/download/e/b/a/eba1050f-a31d-436b-9281-92cdfeae4b45/UAA_Overview.doc Windows Paper showing Vista Sound architecture]
+
+
+
   * Java API options (not every API will be used in this project):
     * Java Sound / JMF:
       * [http://www.jsresources.org/ Java resources]
