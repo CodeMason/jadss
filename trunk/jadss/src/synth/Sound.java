@@ -23,7 +23,7 @@ public class Sound{
 	private byte data[];
 	
 	/**Size of array bytes for sampling*/
-	private int playSampleCount = 262144;
+	private int playSampleCount = 4096;
 	
 	/**Default sampling rate. It'll change for file's default if used*/
 	private float defaultRate = 44100;
@@ -41,14 +41,14 @@ public class Sound{
 	private int bitsPerSample=8;
 	
 	/**Default value for reference Distance*/
-	private float refDistance = .1f;
+	private float refDistance = 0.1f;
 
 	/**Default value for distance*/
 	private float distance = refDistance;
 	
 	
 	/**Default value for reference gain, (the lower it is, the further distance we can simulate)*/
-	private float refGain = -35.4174823761f;
+	private float refGain = -35.417482376099f;
 	/**Default value for gain on the distance*/
 	private float gain=refGain;
 
@@ -107,7 +107,6 @@ public class Sound{
 			e.printStackTrace();
 			System.exit(1);
 		}
-	    
 
 	}
 	
@@ -140,6 +139,7 @@ public class Sound{
 		}
 
 		data = new byte[audioSize];
+		
 		int read=0;
 		try {
 			read = audioInputStream.read(data,0,audioSize);
@@ -253,12 +253,12 @@ public class Sound{
 			gainControl.setValue(gain);
 		}
 		else {
-			System.err.println("Distance input is higher than maximum distance: Adjusting to maximum distance");
+			System.err.println("Distance input is higher than maximum distance: Adjusting to maximum");
 			distance = getMaximumDistance();
-			gain = refGain+(float)(19.93f*Math.log10(distance));
+			gain = gainControl.getMaximum();
 			gainControl.setValue(gain);
 		}
-		
+		this.offset=0;
 		float f =(getOffsetMicros()+(distance-refDistance)/343*1000000);
 		setOffsetMicros((long)f);
 	}
@@ -270,8 +270,12 @@ public class Sound{
 	public void setOffset(int offset) {
 		if(offset>=audioSize){
 			System.err.println("Warning: Offset Bigger than audio size");
-			offset=0;
+			this.offset=0;
 		}
+		else if(offset%frameSize!=0){
+				this.offset = offset +(offset%frameSize);
+				System.err.println("Warning, offset needs to match an integral frame size. Old value: "+offset+" New value: "+ this.offset);
+			}
 		else this.offset = offset;
 	}
 	
@@ -281,8 +285,8 @@ public class Sound{
 	}
 
 	public void setOffsetMicros(long off){
-		float f = (off*bytesSec)/1000000.f;
-		offset = (int) f;
+		float offsetBytes = (off*bytesSec)/1000000.f;
+		setOffset((int) offsetBytes);
 	}
 	
 	public float getPrecision(){
@@ -307,12 +311,6 @@ public class Sound{
 	 * Play indefinitely a sound 
 	 */
 	public void loop(){
-		if(offset%frameSize!=0){
-			int pOffset = offset;
-			offset+=offset%frameSize;
-			System.err.println("Warning, the initial offset needs to be rounded to match an integral frame size. Old value: "+pOffset+" New value: "+ offset);
-		}
-
 		while(true){
 			if(offset >= audioSize ){
 				offset = 0;
@@ -335,12 +333,13 @@ public class Sound{
 		if(end%frameSize!=0){
 			int pEnd = end;
 			end-=end%frameSize;
-			System.err.println("Warning, the end time needs to be rounded to match an integral frame size. Old value: "+pEnd+" New value: "+ end);
+			System.err.println("Warning, the end offset time needs to match an integral frame size. Old value: "+pEnd+" New value: "+ end);
 		}
-
-		offset+=start;
 		
-		System.out.println("t0: ("+uStart+" , "+offset+")     te: ("+uEnd+" , "+end+") in (us, B)");
+		if(uStart!=this.getOffsetMicros())
+			setOffset(start);
+		
+		System.out.println("LOG: t0: ("+getOffsetMicros()+" , "+offset+")     te: ("+uEnd+" , "+end+") in (us, B)");
 		this.play(start,end);
 	}
 	
@@ -350,13 +349,6 @@ public class Sound{
 	 * @param end
 	 */
 	public void play(int start, int end){		
-		if(offset%frameSize!=0){
-			int pOffset = offset;
-			offset+=offset%frameSize;
-			System.err.println("Warning, the initial offset needs to be rounded to match an integral frame size. Old value: "+pOffset+" New value: "+ offset);
-		}
-
-
 		//playOffset will provide a offset counter
 		int playOffset = offset;
 		int toWrite = chunkSize;
@@ -379,16 +371,23 @@ public class Sound{
 			offset+=written;
 			playOffset+=written;
 		}
+		
 		toWrite = end-playOffset;
 		if((toWrite%frameSize)!=0){
 			System.err.println("Approximation needed in writing: ("+toWrite+") is not an integral number for frameSize: "+frameSize);
 			toWrite-=(toWrite%frameSize);
 		}
-		//We need to write the last chunk (smaller than chunkSize)
+
+		if((offset+toWrite)>=audioSize){
+			written = line.write(data, offset,(audioSize-offset));
+			toWrite -=written;
+			offset=0;
+		}
 		written = line.write(data, offset,toWrite);
 		playOffset += written;
 		offset=playOffset;
-		line.drain();
+		
+		//line.drain();
 	}
 	
 	
@@ -396,18 +395,12 @@ public class Sound{
 	 * Play a complete sound, from the beginning to the end. 
 	 */
 	public void play(){
-		if(offset%frameSize!=0){
-			int pOffset = offset;
-			offset+=offset%frameSize;
-			System.err.println("Warning, the initial offset needs to be rounded to match an integral frame size. Old value: "+pOffset+" New value: "+ offset);
-		}
-
 		while(offset<(audioSize-chunkSize)){
 				line.write(data, offset, chunkSize);
 				offset+=chunkSize;
 		}
 		offset += line.write(data, offset, audioSize-offset);
-		line.drain();
+		//line.drain();
 	}
 
 	/**
