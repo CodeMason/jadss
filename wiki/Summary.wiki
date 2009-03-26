@@ -46,7 +46,15 @@ http://jadss.googlecode.com/svn/trunk/jadss/imgs/layers.gif
   * Java layer: 
     * First of all, we have our Application layer. This layer is *over* our project, since we're trying to offer a service. We'll implement, of course, an example app to show the power of the project.
     * Next, there's our Sound system layer, which connects the application to Java Sound library. This is where we need to focus our attention in order to optimize the project, since the rest of them will not depend on us.
-    * Then, the Java Sound (as part of JMF _or Java Media Framework_)*TO BE CONTINUED*
+    * Then, the Java Sound as part of JMF (_or Java Media Framework_) is what connects our program with the OS. It interacts with the JVM directly, so it give us a very interesting abstraction layer.
+  * OS layer:
+    * First of all, we find a layer which contains the sound mixer, which depending on the OS selected, will be slightly different:
+      * On the one hand, if we choose a modern Windows platform, we'll find the UAA (Universal Audio Architecture) which is another abstraction layer which allows to manage the sound card without reaching to a driver-specific level. We may also find another kind of layer, the WDM (_Windows Driver Model_), but UAA was supposed to replace it in most of new sound card drivers. Anyway, independently of the election, if we opted for the windows solution, we'll find that below UAA/WDM is the windows kernel, which will directly use the sound card drivers to connect it to the hardware.
+      * On the other hand, if we choose a Linux/UNIX distro as the OS for our system, we'll have a similar architecture, with some differences:
+        * OSS (Open Sound System) which was the first and simplest driver manager for every Unix Platform. It's the equivalent to X's video manager for audio. It's currently in desuse, but since it keeps being the simplest, and OSS4.x is very well improved and it's usable in Unix-based OS (not just Linux), it may be very useful for some architectures.
+        * ALSA (Advanced Linux Sound Architecture) system, which is a powerful generic driver manager, which was created for automatic configuration of multiple sound cards. It was independent from Linux kernel until the 2.6 kernel version, where ALSA became the official linux sound Architecture.
+        * PulseAudio, which is slightly different since it works over ALSA or OSS, might be also included in this list, since it's considered a link between our applications and ALSA/OSS, which will manage directly the sound card.
+  * Hardware: I won't go further into hardware layer, since it seems out of scope for this project. Let's just say the OS implements several ways to reduce the CPU time to it's minimum, and it won't imply important delays.
 
 -----
 <br>
