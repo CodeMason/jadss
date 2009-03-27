@@ -1,8 +1,9 @@
 #summary wiki sidebar
+#labels extra
 
   * [Summary Main]
   * [Summary#Ideas Ideas]
-  * [Summary#How_it_works How it works]
+  * [Summary#Architecture Architecture]
   * [Summary#Interesting_Formulas Sound Theory Formulas]
   * [choices Choices]
   * [Links Links]
