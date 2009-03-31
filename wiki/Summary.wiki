@@ -54,6 +54,14 @@ http://jadss.googlecode.com/svn/trunk/jadss/imgs/layers.gif
       * ALSA (Advanced Linux Sound Architecture) system, which is a powerful generic driver manager, which was created for automatic configuration of multiple sound cards. It was independent from Linux kernel until the 2.6 kernel version, where ALSA became the official linux sound Architecture.<br><br>
       * !PulseAudio, which is slightly different since it works over ALSA or OSS, might be also included in this list, since it's considered a link between our applications and ALSA/OSS, which will manage directly the sound card.<br><br>
   * Hardware: I won't go further into hardware layer, since it seems out of scope for this project. Let's just say the OS implements several ways to reduce the CPU time to it's minimum, and it won't imply important delays.
+<br>
+<br>
+
+In the image below we can understand how the project plays the audio from a file (writing it into a sound card).
+<br> 
+<br>
+http://jadss.googlecode.com/svn/trunk/jadss/imgs/buffers.png
+
 
 -----
 <br>
