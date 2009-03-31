@@ -22,17 +22,16 @@ public class Sound{
 	/** Sample data array */
 	private byte data[];
 	
-	/**Size of array bytes for sampling*/
-	private int playSampleCount = 4096;
-	
 	/**Default sampling rate. It'll change for file's default if used*/
 	private float defaultRate = 44100;
-
+	
 	/**Size of each chunk that will be written in line
-	 * If it's too small, sound will play with artifacts due to the little pauses between writings (empty buffer).
+	 * If it's too small, sound will play with artifacts due to the pauses between writings (empty buffer).
 	 * If it's too big, the precision will decrease*/
 	private int chunkSize = 4096;
 	
+	/**Size of array bytes for sampling*/
+	private int playSampleCount = chunkSize;
 	
 	/**Sound offset in bytes used for both sounds, files and 'sampled'*/
 	private int offset = 0;
@@ -75,14 +74,14 @@ public class Sound{
 
 	private int audioSize;
 
-
 	
+
 	/**
 	 * Default constructor, generates a Sin wave sound sampled directly
 	 */
 	public Sound(){
-		data = new byte[playSampleCount];
-		audioSize = playSampleCount;
+		data = new byte[(int)(defaultRate)];
+		audioSize = data.length;
 		format = new AudioFormat(defaultRate, bitsPerSample, 1, true, true);
 	    info = new DataLine.Info(SourceDataLine.class, format);
 	    
@@ -92,9 +91,9 @@ public class Sound{
 	    frameSize = 1;
 	    
  	    double x;
-	    for(int i=0;i<playSampleCount;i++){
+	    for(int i=0;i<audioSize;i++){
 	    	x= Math.sin(i/(4*Math.PI));
-	    	data[i]=(byte) (((x+1)*256/2-128));
+	    	data[i]=(byte) (x*128);
 	    }
 	    
 	    try {
@@ -110,7 +109,7 @@ public class Sound{
 
 	}
 	
-
+	
 	/**
 	 * Constructor with parameters we will use in case we need to play a sound file
 	 * @param filename String that contains the path to the file we will use
@@ -172,8 +171,16 @@ public class Sound{
 		}
 	}
 
-	
+
 	//GETTERS AND SETTERS	
+	public int getAudioSize() {
+		return audioSize;
+	}
+	
+	public long getAudioLength(){
+		return (long) ((1000000.f*audioSize)/bytesSec);
+	}
+
 	public int getPlaySampleCount() {
 		return playSampleCount;
 	}
@@ -267,16 +274,17 @@ public class Sound{
 		return offset;
 	}
 
-	public void setOffset(int offset) {
-		if(offset>=audioSize){
-			System.err.println("Warning: Offset Bigger than audio size");
-			this.offset=0;
+	public void setOffset(int off) {
+		this.offset = off;
+		if(off>=audioSize){
+			this.offset=off%audioSize;
+			System.err.println("Warning: Offset Bigger than audio size:( "+ off+" % "+audioSize+" = "+this.offset+" )");
 		}
-		else if(offset%frameSize!=0){
-				this.offset = offset +(offset%frameSize);
-				System.err.println("Warning, offset needs to match an integral frame size. Old value: "+offset+" New value: "+ this.offset);
-			}
-		else this.offset = offset;
+		if(off%frameSize!=0){
+				this.offset = this.offset +(this.offset%frameSize);
+				System.err.println("Warning, offset needs to match an integral frame size. Old value: "+off+" New value: "+ this.offset);
+		}
+		
 	}
 	
 	public long getOffsetMicros(){
@@ -288,6 +296,8 @@ public class Sound{
 		float offsetBytes = (off*bytesSec)/1000000.f;
 		setOffset((int) offsetBytes);
 	}
+	
+	
 	
 	public float getPrecision(){
 		float result = ((float)chunkSize)/bytesSec;
@@ -336,19 +346,91 @@ public class Sound{
 			System.err.println("Warning, the end offset time needs to match an integral frame size. Old value: "+pEnd+" New value: "+ end);
 		}
 		
-		if(uStart!=this.getOffsetMicros())
-			setOffset(start);
-		
-		System.out.println("LOG: t0: ("+getOffsetMicros()+" , "+offset+")     te: ("+uEnd+" , "+end+") in (us, B)");
 		this.play(start,end);
 	}
 	
+	
+	/**
+	 * Play a sound during a certain amount of time. Uses playDuring(start,length)
+	 * @param uStart starting position time expressed in microseconds
+	 * @param uLength duration expressed in microseconds
+	 */
+	public void playDuringMicros(long uStart, long uLength){
+		float f = (uStart*bytesSec)/1000000.f;
+		int start = (int) f;
+		f = (uLength*bytesSec)/1000000.f;
+		int length = (int) f;
+		this.playDuring(start, length);
+		//System.err.println("offset: "+offset+" length: "+length+" start: "+start+" end: "+(start+length));
+	}
+	
+	
+	/**
+	 * Play a sound for duration.
+	 * @param start Starting byte
+	 * @param length Length of the play (expressed in bytes)
+	 */
+	public void playDuring(int start, int length){				
+		int played=0;
+		if(start>=audioSize){
+			start = start%audioSize;
+		}
+		if((start%frameSize)!=0){
+			start-= start%frameSize;
+		}
+
+		offset = start;
+		
+		int written = 0;
+		int toWrite =chunkSize;		
+		
+		//We need to write just until we reach end-chunkSize, so we could write the difference later
+		while(played<(length-chunkSize)){
+			if(offset>=audioSize){
+				offset=offset%audioSize;
+			}
+			if(offset<(audioSize-chunkSize)){
+				toWrite = chunkSize;
+			}
+			if(offset>=(audioSize-chunkSize)){
+				toWrite = audioSize-offset;
+			}
+			written = line.write(data, offset, toWrite);
+			played+=written;
+			offset+=written;
+		}
+
+
+		toWrite = length-played;
+		if((toWrite%frameSize)!=0){
+			toWrite-=(toWrite%frameSize);
+		}
+
+		if((offset+toWrite)>=audioSize){
+			written = line.write(data, offset,(audioSize-offset));
+			toWrite -=written;
+			played+=written;
+			offset=0;
+		}
+
+		if(toWrite>0)
+			written = line.write(data, offset,toWrite);
+		
+		played+=written;
+		offset+=written;		
+	}
+	
+	
+	
 	/**
 	 * Play a sound between the bytes indicated.
-	 * @param start
-	 * @param end
+	 * @param start Starting byte position
+	 * @param end Ending byte position
 	 */
-	public void play(int start, int end){		
+	public void play(int start, int end){
+		setOffset(start%audioSize);
+		
+		
 		//playOffset will provide a offset counter
 		int playOffset = offset;
 		int toWrite = chunkSize;
@@ -357,13 +439,13 @@ public class Sound{
 		//We need to write just until we reach end-chunkSize, so we could write the difference later
 		while(playOffset<(end-chunkSize)){
 			//If we're about to get over the audio size, we reset the actual offset
-			if(offset >= audioSize ){
+			if(offset >= audioSize){
 				offset = 0;
 				toWrite = chunkSize;
 			}
 			//If we're on the end of the file, we should write just the last chunk of sound
 			else if((offset+chunkSize)>=audioSize){
-				toWrite = (audioSize-offset);
+				toWrite = (audioSize-offset);	
 			}
 
 			//Writing on the file
@@ -387,7 +469,6 @@ public class Sound{
 		playOffset += written;
 		offset=playOffset;
 		
-		//line.drain();
 	}
 	
 	
@@ -403,6 +484,8 @@ public class Sound{
 		//line.drain();
 	}
 
+
+	
 	/**
 	 * Close the sound system
 	 */
