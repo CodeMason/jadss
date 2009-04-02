@@ -3,7 +3,7 @@
 
   * [Summary Main]
   * [Summary#Ideas Ideas]
-  * [Summary#Architecture Architecture]
+  * [ProjectArchitecture Architecture]
   * [Summary#Interesting_Formulas Sound Theory Formulas]
   * [choices Choices]
   * [Links Links]
