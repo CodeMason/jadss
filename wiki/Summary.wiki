@@ -36,8 +36,11 @@ For API Choices see [choices choices page]
 <br>
 
 = Architecture =
-<br>
+
 See ProjectArchitecture wiki page.
+-----
+<br>
+<br>
 <br>
 <br>
 
