@@ -36,43 +36,8 @@ For API Choices see [choices choices page]
 <br>
 
 = Architecture =
-
-Here I'm taking some tips to see the project layers as a typical sound application.
-
-  * There are some layers we need to 'cross' to play sound in our computer. Each one will take a delay between it's coming from superior level and going into the next one. If we're able to reduce these delays, it may achieve our goals.
 <br>
-http://jadss.googlecode.com/svn/trunk/jadss/imgs/layers.gif
-<br>
-  * Java layer: 
-    * First of all, we have our Application layer. This layer is *over* our project, since we're trying to offer a service. We'll implement, of course, an example app to show the power of the project.<br><br>
-    * Next, there's our Sound system layer, which connects the application to Java Sound library. This is where we need to focus our attention in order to optimize the project, since the rest of them will not depend on us.<br><br>
-    * Then, the Java Sound as part of JMF (_or Java Media Framework_) is what connects our program with the OS. It interacts with the JVM directly, so it give us a very interesting abstraction layer.<br><br>
-  * OS layer: First of all, we find a layer which contains the sound mixer, which depending on the OS selected, will be slightly different:<br><br>
-    * On the one hand, if we choose a modern Windows platform, we'll find the UAA (Universal Audio Architecture) which is another abstraction layer which allows to manage the sound card without reaching to a driver-specific level. We may also find another kind of layer, the WDM (_Windows Driver Model_), but UAA was supposed to replace it in most of new sound card drivers. Anyway, independently of the election, if we opted for the windows solution, we'll find that below UAA/WDM is the windows kernel, which will directly use the sound card drivers to connect it to the hardware.<br><br>
-    * On the other hand, if we choose a Linux/UNIX distro as the OS for our system, we'll have a similar architecture, with some differences:<br><br>
-      * OSS (Open Sound System) which was the first and simplest driver manager for every Unix Platform. It's the equivalent to X's video manager for audio. It's currently in desuse, but since it keeps being the simplest, and OSS4.x is very well improved and it's usable in Unix-based OS (not just Linux), it may be very useful for some architectures.<br><br>
-      * ALSA (Advanced Linux Sound Architecture) system, which is a powerful generic driver manager, which was created for automatic configuration of multiple sound cards. It was independent from Linux kernel until the 2.6 kernel version, where ALSA became the official linux sound Architecture.<br><br>
-      * !PulseAudio, which is slightly different since it works over ALSA or OSS, might be also included in this list, since it's considered a link between our applications and ALSA/OSS, which will manage directly the sound card. *It can be used to stream audio to another PC in a network*<br><br>
-  * Hardware: I won't go further into hardware layer, since it seems out of scope for this project. Let's just say the OS implements several ways to reduce the CPU time to it's minimum, and it won't imply important delays.
-<br>
-<br>
-
-In the image below we can understand how the project plays the audio from a file (writing it into a sound card).
-<br> 
-<br>
-http://jadss.googlecode.com/svn/trunk/jadss/imgs/buffers.png
-<br>
-<br>
-_Extract from LinuxJournal[http://www.linuxjournal.com/article/6735 
-A sound card has a hardware buffer that stores recorded samples. When the buffer is sufficiently full, it generates an interrupt. The kernel sound driver then uses direct memory access (DMA) to transfer samples to an application buffer in memory. Similarly, for playback, another application buffer is transferred from memory to the sound card's hardware buffer using DMA.
-
-<br>
-
-So, in order to play a file, we need to divide it into different chunks, so it can be passed from our method `write` to the soundcard (passing across the different layers commented above). I'd like to remark that the `write` method is _blocking_, so if buffer is full it will wait so it can be emptied. The thing about this is that it's actually a good thing, since as we create our buffer with the same size of our line, we're pretty sure the application won't finish ahead of time.
-
-
-<br>
-<br>
+See ProjectArchitecture wiki page.
 <br>
 <br>
 
