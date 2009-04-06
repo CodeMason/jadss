@@ -44,6 +44,16 @@ So, in order to play a file, we need to divide it into different chunks, so it c
 
 = Testing the architecture parameters = 
 
+== General info for test ==
+Audio files properties 
+
+||File||Type||rate||bits per sample||mono/stereo||B per frame||endianness||B/s||
+||alert.wav||PCM_Unsigned||11025||8||mono||1||little-endian||11025||
+||sin.wav||PCM_Unsigned||44100||8||mono||1||little-endian||44100||
+||gong.wav||PCM_Signed||11025||16||mono||2||little-endian||22050||
+||stillalive.wav||PCM_Signed||22050||16||mono||2||little-endian||44100||
+
+
 == First test ==
 Playing 10000 μs slices of different audio files (with different properties) 400 times (so each sound would be played for 4 seconds). Background indicates quality and the number in the cell the percentage of time required in the application.
 
