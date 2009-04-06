@@ -55,11 +55,18 @@ Audio files properties
 
 
 == First test ==
-Playing 10000 μs slices of different audio files (with different properties) 400 times (so each sound would be played for 4 seconds). Line buffer is fixed to 4096 B.
+Playing 10000 μs slices of different audio files (with different properties) 400 times (so each sound would be played for 4 seconds).
 
-Background indicates audible quality and the number in the cell the percentage of time required in the application.
+Background indicates audible quality and the number in the cell the percentage of time required in the application. (Red => Unaudible, Yellow=>Random artifacts, Green=>Ok).
 
+
+Line buffer (playSampleCount) fixed to 4KB.
 <br>
 http://jadss.googlecode.com/svn/trunk/jadss/imgs/test1.png
+<br>
+<br>
+Line buffer (playSampleCount) fixed to 1KB.
+<br>
+http://jadss.googlecode.com/svn/trunk/jadss/imgs/test2.png
 <br>
 <br>
