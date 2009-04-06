@@ -55,7 +55,9 @@ Audio files properties
 
 
 == First test ==
-Playing 10000 μs slices of different audio files (with different properties) 400 times (so each sound would be played for 4 seconds). Background indicates quality and the number in the cell the percentage of time required in the application.
+Playing 10000 μs slices of different audio files (with different properties) 400 times (so each sound would be played for 4 seconds). Line buffer is fixed to 4096 B.
+
+Background indicates audible quality and the number in the cell the percentage of time required in the application.
 
 <br>
 http://jadss.googlecode.com/svn/trunk/jadss/imgs/test1.png
