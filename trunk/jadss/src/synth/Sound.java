@@ -22,12 +22,9 @@ public class Sound{
 	/** Sample data array */
 	private byte data[];
 	
-	/**Default sampling rate. It'll change for file's default if used*/
-	private float defaultRate = 44100;
-	
 	/**Size of each chunk that will be written in line
-	 * If it's too small, sound will play with artifacts due to the pauses between writings (empty buffer).
-	 * If it's too big, the precision will decrease*/
+	 *    If it's too small, sound will play with artifacts due to the pauses between writings (buffer underrun).
+	 *    If it's too big, the precision will decrease*/
 	private int chunkSize = 4096;
 	
 	/**Size of array bytes for sampling*/
@@ -36,20 +33,11 @@ public class Sound{
 	/**Sound offset in bytes used for both sounds, files and 'sampled'*/
 	private int offset = 0;
 	
+	/**Default sampling rate. It'll change for file's default if used*/
+	private float defaultRate = 44100;
+	
 	/**Default value for bitsPerSample*/
 	private int bitsPerSample=8;
-	
-	/**Default value for reference Distance*/
-	private float refDistance = 0.1f;
-
-	/**Default value for distance*/
-	private float distance = refDistance;
-	
-	
-	/**Default value for reference gain, (the lower it is, the further distance we can simulate)*/
-	private float refGain = -35.417482376099f;
-	/**Default value for gain on the distance*/
-	private float gain=refGain;
 
 	/**Amount of bytes that will be played in a second*/
 	private long bytesSec;
@@ -57,6 +45,22 @@ public class Sound{
 	/** Integer that shows the size of an audio frame, needed to prevent exceptions on write*/
 	private int frameSize;	
 	
+	/** Size of audio file (or sampled audio size, if it's not a file)*/
+	private int audioSize;
+	
+	
+	/**Default value for reference Distance*/
+	private float refDistance = 0.1f;
+	
+	/**Default value for distance*/
+	private float distance = refDistance;
+	
+	/**Default value for reference gain, (the lower it is, the further distance we can simulate)*/
+	private float refGain = -35.417482376099f;
+	/**Default value for gain on the distance*/
+	private float gain=refGain;
+
+
 	/*SYSTEM PARAMETERS*/
 	/**Audio Input Stream that loads the file*/
 	private AudioInputStream audioInputStream = null;
@@ -72,9 +76,6 @@ public class Sound{
 	/**Control for the line Master gain*/
 	private FloatControl gainControl;
 
-	private int audioSize;
-
-	
 
 	/**
 	 * Default constructor, generates a Sin wave sound sampled directly
@@ -121,7 +122,8 @@ public class Sound{
 			audioInputStream = AudioSystem.getAudioInputStream(f);
 			audioSize = audioInputStream.available();
 			format = audioInputStream.getFormat();
-			frameSize = audioInputStream.getFormat().getFrameSize();
+			//System.err.println(format.toString());
+			frameSize = format.getFrameSize();
 
 			bitsPerSample = format.getSampleSizeInBits();
 			defaultRate = format.getSampleRate();
@@ -399,25 +401,25 @@ public class Sound{
 			played+=written;
 			offset+=written;
 		}
+		if(toWrite>0){
+			toWrite = length-played;
+			if((toWrite%frameSize)!=0){
+				toWrite-=(toWrite%frameSize);
+			}
 
+			if((offset+toWrite)>=audioSize){
+				written = line.write(data, offset,(audioSize-offset));
+				toWrite -=written;
+				played+=written;
+				offset=0;
+			}
 
-		toWrite = length-played;
-		if((toWrite%frameSize)!=0){
-			toWrite-=(toWrite%frameSize);
-		}
+			if(toWrite>0)
+				written = line.write(data, offset,toWrite);
 
-		if((offset+toWrite)>=audioSize){
-			written = line.write(data, offset,(audioSize-offset));
-			toWrite -=written;
 			played+=written;
-			offset=0;
-		}
-
-		if(toWrite>0)
-			written = line.write(data, offset,toWrite);
-		
-		played+=written;
-		offset+=written;		
+			offset+=written;		
+		}		
 	}
 	
 	
@@ -477,8 +479,8 @@ public class Sound{
 	 */
 	public void play(){
 		while(offset<(audioSize-chunkSize)){
-				line.write(data, offset, chunkSize);
-				offset+=chunkSize;
+				
+				offset+= line.write(data, offset, chunkSize);
 		}
 		offset += line.write(data, offset, audioSize-offset);
 		//line.drain();
