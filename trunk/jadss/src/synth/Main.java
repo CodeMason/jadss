@@ -31,7 +31,7 @@ public class Main {
 		System.out.println("Play at: "+s.getDistance()+ " m (" + s.getGain()+ " dB)");
 		System.out.println("Bytes Per second: "+s.getBytesSec()+" B/s ,  bits per sample: "+s.getBitsPerSample()+" bps , chunksize: "+s.getChunkSize()+" B");
 		
-		for(int j=1;j<=512;j*=2){
+		for(int j=32;j<=512;j*=2){
 			s.setChunkSize(16*j);
 			int dur   = 10000;//s.getChunkSize();
 			ini = System.currentTimeMillis();

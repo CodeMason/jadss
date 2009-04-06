@@ -25,7 +25,7 @@ public class Sound{
 	/**Size of each chunk that will be written in line
 	 *    If it's too small, sound will play with artifacts due to the pauses between writings (buffer underrun).
 	 *    If it's too big, the precision will decrease*/
-	private int chunkSize = 4096;
+	private int chunkSize = 1024;
 	
 	/**Size of array bytes for sampling*/
 	private int playSampleCount = chunkSize;
