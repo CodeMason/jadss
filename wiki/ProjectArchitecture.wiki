@@ -36,7 +36,7 @@ _A sound card has a hardware buffer that stores recorded samples. When the buffe
 
 <br>
 
-So, in order to play a file, we need to divide it into different chunks, so it can be passed from our method `write` to the soundcard (passing across the different layers commented above). I'd like to remark that the `write` method is _blocking_, so if buffer is full it will wait so it can be emptied. The thing about this is that it's actually a good thing, since as we create our buffer with the same size of our line, we're pretty sure the application won't finish ahead of time. In addition, we won't need to use the _drain()_ method, which would cause delays and indetermination while emptying the buffer.
+So, in order to play a file, we need to divide it into different chunks, so it can be passed from our method `write` to the soundcard (passing across the different layers commented above). I'd like to remark that the `write` method is _blocking_, so if buffer is full it will wait so it can be emptied. This is actually a good thing, since as we create our buffer with the same size of our line, we're pretty sure the application won't be finished ahead of time. In addition, we won't need to use the _drain()_ method, which would cause delays and indetermination while emptying the buffer.
 
 
 <br>
