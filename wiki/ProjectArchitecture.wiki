@@ -36,8 +36,18 @@ _A sound card has a hardware buffer that stores recorded samples. When the buffe
 
 <br>
 
-So, in order to play a file, we need to divide it into different chunks, so it can be passed from our method `write` to the soundcard (passing across the different layers commented above). I'd like to remark that the `write` method is _blocking_, so if buffer is full it will wait so it can be emptied. This is actually a good thing, since as we create our buffer with the same size of our line, we're pretty sure the application won't be finished ahead of time. In addition, we won't need to use the _drain()_ method, which would cause delays and indetermination while emptying the buffer.
+So, in order to play a file, we need to divide it into different chunks, so it can be passed from our method `write` to the sound card (passing across the different layers commented above). I'd like to remark that the `write` method is _blocking_, so if buffer is full it will wait so it can be emptied. This is actually a good thing, since as we create our buffer with the same size of our line, we're pretty sure the application won't be finished ahead of time. In addition, we won't need to use the _drain()_ method, which would cause delays and indetermination while emptying the buffer.
+<br>
+<br>
+<br>
+<br>
 
+= Testing the architecture parameters = 
 
+== First test ==
+Playing 10000 μs slices of different audio files (with different properties) 400 times (so each sound would be played for 4 seconds). Background indicates quality and the number in the cell the percentage of time required in the application.
+
+<br>
+http://jadss.googlecode.com/svn/trunk/jadss/imgs/test1.png
 <br>
 <br>
