@@ -46,6 +46,7 @@ So, in order to play a file, we need to divide it into different chunks, so it c
 
 Here is a simplified version of how audio is played (written in the line) within our system.
 <br>
+<br>
 http://jadss.googlecode.com/svn/trunk/jadss/imgs/flow.png
 <br>
 <br>
