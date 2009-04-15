@@ -42,6 +42,17 @@ So, in order to play a file, we need to divide it into different chunks, so it c
 <br>
 <br>
 
+= Simple Flowchart of playing process =
+
+Here is a simplified version of how audio is played (written in the line) within our system.
+<br>
+http://jadss.googlecode.com/svn/trunk/jadss/imgs/flow.png
+<br>
+<br>
+<br>
+<br>
+
+
 = Testing the architecture parameters = 
 
 == General info for test ==
