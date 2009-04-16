@@ -1,6 +1,11 @@
 #summary How we're getting closer to the functionality required (TODO's & DONE's)
 #labels Featured,Phase-QA
 
+From now, we might work over *!PulseAudio* and/or protocols like *SIP* (VoIP protocol) in order to go distributed.
+It's important to know if there exists some signalisation mechanism in these systems/protocols, to 'return' the position and other data to our server.
+
+*Maybe Ubuntu Studio might be a helpful OS to work with.*
+
 == Goals Achieved == 
 
   * Math Sounds (Sin waves and so):
@@ -13,14 +18,11 @@
   * Use time shifting to simulate distance.
   * Play only concrete sounds chunks, specified by time.
   * Solve the 'chunk' issue.
-
+  * Ameliorate quality/precision relation (make it less file-dependant).
 
 == Next Goals ==
 
   * Estimate maximum/minimum delay due to every layer on this system (to see which ones we're able to get rid of).
-  * Math sound created or chosen in ET (execution time)
-  * Ameliorate quality/precision relation (make it less file-dependant).
-    * Solve the 'drain' delay
  
 == Other Main Goals ==
 
