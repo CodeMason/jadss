@@ -1,7 +1,15 @@
 #summary Project Architecture issues and questions
 #labels Phase-Design,Featured
 
+= Network Architecture = 
 
+If possible, there's an interesting approach which consists in work over !PulseAudio in order to avoid developing a real-time network protocol (!PulseAudio uses [http://es.wikipedia.org/wiki/Real-time_Transport_Protocol RTP]).
+
+This is how it's supposed to work.
+http://jadss.googlecode.com/svn/trunk/jadss/imgs/network_connections.png
+
+
+= PC Internal Architecture = 
 
 Here I'm taking some tips to see the project layers as a typical sound application.
 
