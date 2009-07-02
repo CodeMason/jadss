@@ -20,11 +20,9 @@
       * [http://java.sun.com/j2se/1.4.2/docs/guide/sound/programmer_guide/index.html Sun Java Sound Guide]
       * [http://java.sun.com/docs/books/tutorial/sound/index.html Java Sound Tutorial]
       * [http://www.phy.ntnu.edu.tw/ntnujava/index.php?topic=17 Java example on generating sound with Fourier]
-
     * Other APIs
       * [http://www.tritonus.org Tritonus API]
       * [http://www.javazoom.net/javalayer/javalayer.html JZoom/JLayer]
-
     * Bindings:
       * [https://joal.dev.java.net/ Java OpenAL]
       * [http://jerome.jouvie.free.fr/Fmod/NativeFmod/index.php NativeFMod]
